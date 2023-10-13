@@ -30,6 +30,35 @@ const displayPopularMovies = async () => {
   });
 };
 
+//Display  popular tvshows
+const displayPopularShows = async () => {
+  const { results } = await fetchData('tv/popular');
+
+  results.forEach((show) => {
+    const div = document.createElement('div');
+    div.classList.add('card');
+    div.innerHTML = `
+        <a href="tv-details.html?${show.id}">
+        ${
+          show.poster_path
+            ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}" class="card-img-top" alt="${show.name}"/>`
+            : `<img src="../images/no-img.jpg" class="card-img-top" alt="${show.name}"/>`
+        }
+        </a>
+        <div class="card-body">
+            <h5 class="card-title">${show.name}</h5>
+            <p class="card-text">
+            <small class="text-muted">First Air Date: ${
+              show.first_air_date
+            }</small>
+            </p>
+        </div>`;
+
+    const tvShow = document.querySelector('#popular-shows');
+    tvShow.appendChild(div);
+  });
+};
+
 // fetch data from movie API
 const fetchData = async (endpoint) => {
   const API_KEY = '33d0999529592bd0a2787468cef89038';
@@ -73,7 +102,7 @@ const init = () => {
       displayPopularMovies();
       break;
     case '/shows.html':
-      console.log('shows');
+      displayPopularShows();
       break;
     case '/movie-details.html':
       console.log('movie details');
