@@ -1,6 +1,10 @@
 //Creating a simple router
 const router = {
   currentPage: window.location.pathname,
+  api: {
+    apiKey: '33d0999529592bd0a2787468cef89038',
+    apiUrl: 'https://api.themoviedb.org/3',
+  },
   //the search parameter variables
   search: {
     type: '',
@@ -265,15 +269,33 @@ const search = async () => {
 
   if (router.search.searchTerm !== '' && router.search.searchTerm !== null) {
     //make the request and display the data
+    const { results } = await fetchSearchData();
+    console.log(results);
   } else {
     customAlert('Enter a search term', 'alert');
   }
 };
 
-// fetch data from movie API
+// Make search Request
+const fetchSearchData = async () => {
+  const API_KEY = router.api.apiKey;
+  const API_URL = router.api.apiUrl;
+
+  showSpinner();
+
+  const response = await fetch(
+    `${API_URL}/search/${router.search.type}?api_key=${API_KEY}&language=en-US&query=${router.search.searchTerm}`
+  );
+
+  const data = await response.json();
+  hideSpinner();
+  return data;
+};
+
+//Fetch data
 const fetchData = async (endpoint) => {
-  const API_KEY = '33d0999529592bd0a2787468cef89038';
-  const API_URL = 'https://api.themoviedb.org/3';
+  const API_KEY = router.api.apiKey;
+  const API_URL = router.api.apiUrl;
 
   showSpinner();
 
