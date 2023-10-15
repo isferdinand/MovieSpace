@@ -1,6 +1,13 @@
 //Creating a simple router
 const router = {
   currentPage: window.location.pathname,
+  //the search parameter variables
+  search: {
+    type: '',
+    searchTerm: '',
+    page: 1,
+    totalPages: 1,
+  },
 };
 
 //Display the movies on the page *remember to set pagination
@@ -222,8 +229,6 @@ const displaySlider = async () => {
 
     initSwiper();
   });
-
-  console.log(results);
 };
 
 const initSwiper = () => {
@@ -250,6 +255,21 @@ const initSwiper = () => {
   });
 };
 
+// Search Movies/ Shows
+const search = async () => {
+  // first get the querystring
+  const queryString = window.location.search;
+  const urlParameters = new URLSearchParams(queryString);
+  router.search.type = urlParameters.get('type');
+  router.search.searchTerm = urlParameters.get('search-term');
+
+  if (router.search.searchTerm !== '' && router.search.searchTerm !== null) {
+    //make the request and display the data
+  } else {
+    customAlert('Enter a search term', 'alert');
+  }
+};
+
 // fetch data from movie API
 const fetchData = async (endpoint) => {
   const API_KEY = '33d0999529592bd0a2787468cef89038';
@@ -273,6 +293,16 @@ const showSpinner = () => {
 
 const hideSpinner = () => {
   document.querySelector('.spinner').classList.toggle('show');
+};
+
+//Alert box if search item is empty
+const customAlert = (message, className) => {
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className);
+  alertEl.appendChild(document.createTextNode(message));
+  document.querySelector('#alert').appendChild(alertEl);
+
+  setTimeout(() => alertEl.remove(), 3000);
 };
 
 // Highlight active page/link
@@ -303,7 +333,7 @@ const init = () => {
       displayShowDetails();
       break;
     case '/search.html':
-      console.log('search');
+      search();
       break;
   }
   activeLink();
