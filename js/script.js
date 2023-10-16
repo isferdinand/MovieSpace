@@ -11,6 +11,7 @@ const router = {
     searchTerm: '',
     page: 1,
     totalPages: 1,
+    totalResults: 0,
   },
 };
 
@@ -269,7 +270,13 @@ const search = async () => {
 
   if (router.search.searchTerm !== '' && router.search.searchTerm !== null) {
     //make the request and display the data
-    const { results, page, total_pages } = await fetchSearchData();
+    const { results, page, total_pages, total_results } =
+      await fetchSearchData();
+
+    router.search.page = page;
+    router.search.totalPages = total_pages;
+    router.search.totalResults = total_results;
+
     if (results.length === 0) {
       customAlert('No results Found', 'error');
       return;
@@ -315,6 +322,9 @@ const displaySearchResulsts = (results) => {
       }</small>
       </p>
     </div>`;
+
+    document.querySelector('#search-results-heading').innerHTML = `
+     <h2>${results.length} of ${router.search.totalResults} for ${router.search.searchTerm}</h2>`;
 
     document.querySelector('#search-results').appendChild(div);
   });
