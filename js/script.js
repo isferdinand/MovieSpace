@@ -293,6 +293,11 @@ const search = async () => {
 
 //Display search results to DOM
 const displaySearchResulsts = (results) => {
+  //Clear previous results on the DOM
+  document.querySelector('#search-results').innerHTML = '';
+  document.querySelector('#search-results-heading').innerHTML = '';
+  document.querySelector('#pagination').innerHTML = '';
+
   results.forEach((result) => {
     const div = document.createElement('div');
     div.classList.add('card');
@@ -328,6 +333,42 @@ const displaySearchResulsts = (results) => {
 
     document.querySelector('#search-results').appendChild(div);
   });
+
+  displayPagination();
+};
+
+//show the pagination of the search resulsts
+const displayPagination = () => {
+  const div = document.createElement('div');
+  div.classList.add('pagination');
+  div.innerHTML = `
+    <button class="btn btn-primary" id="prev">Prev</button>
+    <button class="btn btn-primary" id="next">Next</button>
+    <div class="page-counter">Page ${router.search.page} of ${router.search.totalPages}</div>`;
+
+  document.querySelector('#pagination').appendChild(div);
+
+  //Disable prev on 1st page and next on last page
+  if (router.search.page === 1) {
+    document.querySelector('#prev').disabled = true;
+  }
+  if (router.search.page === router.search.totalPages) {
+    document.querySelector('#next').disabled = true;
+  }
+
+  //Next Page
+  document.querySelector('#next').addEventListener('click', async () => {
+    router.search.page++;
+    const { results, total_pages } = await fetchSearchData();
+    displaySearchResulsts(results);
+  });
+
+  //Previous Page
+  document.querySelector('#prev').addEventListener('click', async () => {
+    router.search.page--;
+    const { results, total_pages } = await fetchSearchData();
+    displaySearchResulsts(results);
+  });
 };
 
 // Make search Request
@@ -338,7 +379,7 @@ const fetchSearchData = async () => {
   showSpinner();
 
   const response = await fetch(
-    `${API_URL}/search/${router.search.type}?api_key=${API_KEY}&language=en-US&query=${router.search.searchTerm}`
+    `${API_URL}/search/${router.search.type}?api_key=${API_KEY}&language=en-US&query=${router.search.searchTerm}&page=${router.search.page}`
   );
 
   const data = await response.json();
